@@ -14,8 +14,14 @@ export function get (id, config, knex) {
 }
 
 export function list (query, config, knex) {
-  const perPage = Number(query.perPage) || 10
+  if (!query.currentPage && !query.filter)
+    throw new Error('insuficient constraints')
+  return do_list(query, config, knex)
+}
+
+function do_list (query, config, knex) {
   const currentPage = Number(query.currentPage) || null
+  const perPage = Number(query.perPage) || 10
   const fields = query.fields ? query.fields.split(',') : null
   const sort = query.sort ? query.sort.split(':') : null
   const filter = query.filter || null
@@ -39,7 +45,7 @@ export function remove (id, config, knex) {
 
 export function csv_export (query, config, outStream, knex) {
   const delimiter = ';'
-  return list(query, config, knex).then(found => {
+  return do_list(query, config, knex).then(found => {
     // outStream.write(_.keys(row).join(delimiter))
     found.map(rec => {
       const row = _.values(rec).join(delimiter)

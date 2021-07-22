@@ -1,4 +1,5 @@
 import conf from './config'
+import assert from 'assert'
 const chai = require('chai')
 chai.should()
 var streams = require('memory-streams')
@@ -31,6 +32,12 @@ module.exports = (g) => {
       const res = await g.TestedModule.list(query, conf, g.knex)
       res.should.have.lengthOf(1)
       res[0].nazev.should.equal(p1.nazev)
+    })
+
+    it('shall not list with insufficient constraints', async () => {
+      await assert.rejects(async () => {
+        return g.TestedModule.list({}, conf, g.knex)
+      })
     })
 
     it('shall update', async () => {
