@@ -1,11 +1,15 @@
 import { whereFilter } from 'knex-filter-loopback'
 import _ from 'underscore'
 
-export default { create, update, list, get, remove, csv_export }
+export default { create, update, list, get, remove, csv_export, check_data }
 
 export function create (data, config, knex) {
-  data = _.pick(data, config.editables)
   return knex(config.tablename).insert(data).returning('*')
+}
+
+export function check_data (data, config) {
+  const diff = _.difference(_.keys(data), config.editables)
+  if (diff) throw new Error('wrong attributes in data set: ' + diff)
 }
 
 export function get (id, config, knex) {

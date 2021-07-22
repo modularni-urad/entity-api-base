@@ -20,6 +20,21 @@ module.exports = (g) => {
 
   return describe('posts', () => {
 
+    
+
+    it('shall pass check_data', async () => {
+      assert.ok(async () => {
+        g.TestedModule.check_data(p1, conf)
+      })
+    })
+
+    it('must not pass check_data', async () => {
+      await assert.rejects(async () => {
+        const wrongdata = Object.assign({}, p1, { ahoj: 'cau' })
+        const res = await g.TestedModule.check_data(wrongdata, conf)
+      })
+    })
+
     it('shall create a new item', async () => {
       const res = await g.TestedModule.create(p1, conf, g.knex)
       // res.id.should.equal(1)
