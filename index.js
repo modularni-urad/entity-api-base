@@ -9,7 +9,7 @@ export function create (data, config, knex) {
 
 export function check_data (data, config) {
   const diff = _.difference(_.keys(data), config.editables)
-  if (diff) throw new Error('wrong attributes in data set: ' + diff)
+  if (diff.length) throw new Error('wrong attributes in data set: ' + diff)
 }
 
 export function get (id, config, knex) {

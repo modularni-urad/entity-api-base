@@ -20,7 +20,11 @@ module.exports = (g) => {
 
   return describe('posts', () => {
 
-    
+    it('shall pass check_data', async () => {
+      assert.ok(async () => {
+        g.TestedModule.check_data({ nazev: 'ahoj' }, conf)
+      })
+    })
 
     it('shall pass check_data', async () => {
       assert.ok(async () => {
