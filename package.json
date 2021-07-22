@@ -1,0 +1,36 @@
+{
+  "name": "entity-api-base",
+  "version": "0.1.0",
+  "description": "universal configurable API",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -r esm -r ./test/utils/env --exit './test/main.js'",
+    "testdbg": "mocha -r esm -r ./test/utils/env --inspect-brk './test/main.js'"
+  },
+  "author": "Vaclav Klecanda <vencax77@gmail.com> (http://vxk.cz)",
+  "repository": "https://github.com/modularni-urad/entity-api-base",
+  "license": "MIT",
+  "peerDependencies": {
+    "knex": "^0.21.18"
+  },
+  "dependencies": {
+    "knex-filter-loopback": "^0.3.0"
+  },
+  "devDependencies": {
+    "esm": "^3.2.25",
+    "chai": "^4.1.2",
+    "chai-http": "^4.2.0",
+    "deepcopy": "^2.0.0",
+    "expect": "^1.20.2",
+    "jsdom": "^9.8.0",
+    "knex-hooks": "0.0.9",
+    "knex-paginate": "^1.2.1",
+    "memory-streams": "^0.1.3",
+    "mocha": "^8.2.0",
+    "sqlite3": "^4.2.0",
+    "underscore": "^1.13.1"
+  },
+  "engines": {
+    "node": ">=12"
+  }
+}
