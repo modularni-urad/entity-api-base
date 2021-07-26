@@ -1,4 +1,5 @@
 import { whereFilter } from 'knex-filter-loopback'
+import { format as CsvStream } from 'fast-csv'
 import _ from 'underscore'
 
 export default { create, update, list, get, remove, csv_export, check_data }
@@ -47,14 +48,12 @@ export function remove (id, config, knex) {
   return knex(config.tablename).where(cond).del()
 }
 
-export function csv_export (query, config, outStream, knex) {
-  const delimiter = ';'
+export function csv_export (query, config, outStream, knex) {  
+  const csvStream = CsvStream({ headers: true })
+  csvStream.pipe(outStream)
   return do_list(query, config, knex).then(found => {
-    // outStream.write(_.keys(row).join(delimiter))
     found.map(rec => {
-      const row = _.values(rec).join(delimiter)
-      outStream.write(row)
-      outStream.write('\n')
-    })
+      csvStream.write(rec)
+    })    
   })
 }
