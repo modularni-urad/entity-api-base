@@ -19,8 +19,8 @@ export function get (id, config, knex) {
 }
 
 export function list (query, config, knex) {
-  if (!query.currentPage && !query.filter)
-    throw new Error('insuficient constraints')
+  // if (!query.currentPage && !query.filter)
+  //   throw new Error('insuficient constraints')
   return do_list(query, config, knex)
 }
 

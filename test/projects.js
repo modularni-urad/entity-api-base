@@ -53,11 +53,11 @@ module.exports = (g) => {
       res[0].nazev.should.equal(p1.nazev)
     })
 
-    it('shall not list with insufficient constraints', async () => {
-      await assert.rejects(async () => {
-        return g.TestedModule.list({}, conf, g.knex)
-      })
-    })
+    // it('shall not list with insufficient constraints', async () => {
+    //   await assert.rejects(async () => {
+    //     return g.TestedModule.list({}, conf, g.knex)
+    //   })
+    // })
 
     it('shall update', async () => {
       const res = await g.TestedModule.update(1, { nazev: 'gandalf' }, conf, g.knex)
