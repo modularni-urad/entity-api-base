@@ -34,7 +34,9 @@ function do_list (query, config, knex) {
   qb = filter ? qb.where(whereFilter(filter)) : qb
   qb = fields ? qb.select(fields) : qb
   qb = sort ? qb.orderBy(sort[0], sort[1]) : qb
-  return currentPage ? qb.paginate({ perPage, currentPage }) : qb
+  return currentPage 
+    ? qb.paginate({ perPage, currentPage, isLengthAware: true }) 
+    : qb
 }
 
 export async function update (id, data, config, knex) {

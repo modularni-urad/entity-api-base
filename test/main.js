@@ -19,7 +19,8 @@ describe('app', () => {
 
   describe('API', () => {
     const submodules = [
-      './projects'
+      './projects',
+      './pagination'
     ]
     submodules.map((i) => {
       const subMod = require(i)
