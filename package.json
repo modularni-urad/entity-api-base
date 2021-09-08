@@ -1,7 +1,7 @@
 {
   "name": "entity-api-base",
   "version": "0.1.0",
-  "description": "universal configurable API",
+  "description": "support lib for creating entity apis",
   "main": "index.js",
   "scripts": {
     "test": "mocha -r esm -r ./test/utils/env --exit './test/main.js'",
