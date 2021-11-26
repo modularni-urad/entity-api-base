@@ -2,60 +2,82 @@ import { whereFilter } from 'knex-filter-loopback'
 import { format as CsvStream } from 'fast-csv'
 import _ from 'underscore'
 
-export default { create, update, list, get, remove, csv_export, check_data }
+export default function initEntityMiddlewarez (config, knex, ErrorClass) {
 
-export function create (data, config, knex) {
-  return knex(config.tablename).insert(data).returning('*')
-}
+  function _getQBuilder(schema) {
+    return knex(knex.ref(config.tablename).withSchema(schema))
+  }
 
-export function check_data (data, config) {
-  const diff = _.difference(_.keys(data), config.editables)
-  if (diff.length) throw new Error('wrong attributes in data set: ' + diff)
-}
+  function create (data, schema = null) {
+    return _getQBuilder(schema).insert(data).returning('*').catch(err => {
+      throw new ErrorClass(400, err.toString())
+    })
+  }
 
-export function get (id, config, knex) {
-  const cond = { [config.idattr || 'id']: id }
-  return knex(config.tablename).where(cond).first()
-}
+  function check_data (data) {
+    const diff = _.difference(_.keys(data), config.editables)
+    if (diff.length) {
+      throw new ErrorClass(400, 'wrong attributes in data set: ' + diff)
+    }
+  }
 
-export function list (query, config, knex) {
-  // if (!query.currentPage && !query.filter)
-  //   throw new Error('insuficient constraints')
-  return do_list(query, config, knex)
-}
+  function get (id, schema = null) {
+    const cond = { [config.idattr || 'id']: id }
+    return _getQBuilder(schema).where(cond)
+    .then(res => {
+      if (res.length) return res[0]
+      throw new ErrorClass(404, 'not found')
+    })
+  }
 
-function do_list (query, config, knex) {
-  const currentPage = Number(query.currentPage) || null
-  const perPage = Number(query.perPage) || 10
-  const fields = query.fields ? query.fields.split(',') : null
-  const sort = query.sort ? query.sort.split(':') : null
-  const filter = query.filter || null
-  let qb = knex(config.tablename)
-  qb = filter ? qb.where(whereFilter(filter)) : qb
-  qb = fields ? qb.select(fields) : qb
-  qb = sort ? qb.orderBy(sort[0], sort[1]) : qb
-  return currentPage 
-    ? qb.paginate({ perPage, currentPage, isLengthAware: true }) 
-    : qb
-}
+  function list (query, schema = null) {
+    // if (!query.currentPage && !query.filter)
+    //   throw new Error('insuficient constraints')
+    return do_list(query, schema)
+  }
 
-export async function update (id, data, config, knex) {
-  const cond = { [config.idattr || 'id']: id }
-  data = _.pick(data, config.editables)
-  return knex(config.tablename).where(cond).update(data).returning('*')
-}
+  function do_list (query, schema = null) {
+    const currentPage = Number(query.currentPage) || null
+    const perPage = Number(query.perPage) || 10
+    const fields = query.fields ? query.fields.split(',') : null
+    const sort = query.sort ? query.sort.split(':') : null
+    const filter = query.filter || null
+    let qb = _getQBuilder(schema)
+    qb = filter ? qb.where(whereFilter(filter)) : qb
+    qb = fields ? qb.select(fields) : qb
+    qb = sort ? qb.orderBy(sort[0], sort[1]) : qb
+    const p = currentPage 
+      ? qb.paginate({ perPage, currentPage, isLengthAware: true }) 
+      : qb
+    return p.catch(err => {
+      throw new ErrorClass(400, err.toString())
+    })
+  }
 
-export function remove (id, config, knex) {
-  const cond = { [config.idattr || 'id']: id }
-  return knex(config.tablename).where(cond).del()
-}
+  async function update (id, data, schema = null) {
+    const cond = { [config.idattr || 'id']: id }
+    data = _.pick(data, config.editables)
+    return _getQBuilder(schema).where(cond).update(data).returning('*').catch(err => {
+      throw new ErrorClass(400, err.toString())
+    })
+  }
 
-export function csv_export (query, config, outStream, knex) {  
-  const csvStream = CsvStream({ headers: true })
-  csvStream.pipe(outStream)
-  return do_list(query, config, knex).then(found => {
-    found.map(rec => {
-      csvStream.write(rec)
-    })    
-  })
+  function remove (id, schema = null) {
+    const cond = { [config.idattr || 'id']: id }
+    return _getQBuilder(schema).where(cond).del().catch(err => {
+      throw new ErrorClass(400, err.toString())
+    })
+  }
+
+  function csv_export (query, outStream, schema = null) {  
+    const csvStream = CsvStream({ headers: true })
+    csvStream.pipe(outStream)
+    return do_list(query, schema).then(found => {
+      found.map(rec => {
+        csvStream.write(rec)
+      })    
+    })
+  }
+
+  return { create, update, list, get, remove, csv_export, check_data }
 }

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha -r esm -r ./test/utils/env --exit './test/main.js'",
-    "testdbg": "mocha -r esm -r ./test/utils/env --inspect-brk './test/main.js'"
+    "testdbg": "mocha -r esm -r ./test/utils/env --inspect './test/main.js'"
   },
   "author": "Vaclav Klecanda <vencax77@gmail.com> (http://vxk.cz)",
   "repository": "https://github.com/modularni-urad/entity-api-base",

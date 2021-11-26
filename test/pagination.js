@@ -1,4 +1,3 @@
-import conf from './config'
 import assert from 'assert'
 const chai = require('chai')
 chai.should()
@@ -18,10 +17,10 @@ module.exports = (g) => {
     it('shall return total items when paginated', async () => {
       for (let i = 0; i < 10; i++) {
         const data = Object.assign(p1, {nazev: i})
-        await g.TestedModule.create(data, conf, g.knex)
+        await g.EntityMW.create(data)
       }
       const q = { currentPage: 2, perPage: 2, sort: 'id:asc' }
-      const res = await g.TestedModule.list(q, conf, g.knex)
+      const res = await g.EntityMW.list(q)
       res.pagination.total.should.equal(11)
     })
 
